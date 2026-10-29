@@ -79,6 +79,18 @@ class Cancelled(Exception):
     pass
 
 
+def disk_full(e):
+    """True for 'no space left on device' (numpy says '... requested and 0 written')"""
+    return (isinstance(e, OSError) and getattr(e, "errno", None) == 28) or "No space left" in str(e) \
+        or "requested and 0 written" in str(e)
+
+
+def disk_full_text(path):
+    drive = os.path.splitdrive(os.path.abspath(path))[0] or os.path.abspath(path)
+    return ("Disk full: %s has no space left. Free some space (or pick an output folder on another drive), "
+            "then Generate again: the steps already done are kept." % drive)
+
+
 def _hash(obj):
     return hashlib.sha1(json.dumps(obj, sort_keys=True, default=str).encode()).hexdigest()[:16]
 
@@ -360,6 +372,14 @@ class Job(object):
         t_all = time.time()
         if until is None and not self.needed("write"):
             raise ValueError("Turn on at least one pass.")
+        try:
+            free = shutil.disk_usage(self.out).free / 2.0 ** 30
+        except OSError:
+            free = None
+        if free is not None and free < 1.0:
+            raise OSError(28, disk_full_text(self.out))
+        if free is not None and free < 3.0 + 0.06 * self.n:       # the cache needs ~50 MB per frame (2K)
+            self.log("WARNING: only %.1f GB free on the output drive, the cache may not fit" % free)
         for name in STEP_NAMES:
             self.check()
             if not self.needed(name):
@@ -644,6 +664,8 @@ class Job(object):
                 rc = proc.wait()
             if rc == 0 and done >= self.n:
                 break
+            if rc == 3:                           # disk full: no point in a new process
+                raise OSError(28, disk_full_text(self.out))
             if done > start:                      # got somewhere: same settings, fresh GPU, next frame
                 restarts += 1
                 self.log("[moge] lost the GPU at frame %d (after %d frames) -> fresh process, carrying on"

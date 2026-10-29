@@ -22,10 +22,11 @@ def main(argv=None):
                     detail=lambda text: send(t="detail", m=text))
         job._moge_frames(int(req["start"]), int(req["level"]), int(req["steps"]))
         return 0
-    except Exception:
+    except Exception as e:
         import traceback
         send(t="log", m=traceback.format_exc())
-        return 1
+        from .pipeline import disk_full
+        return 3 if disk_full(e) else 1           # 3: disk full, step_moge stops instead of retrying
 
 
 if __name__ == "__main__":

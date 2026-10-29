@@ -37,7 +37,14 @@ def main(argv=None):
     except Exception as e:
         import traceback
         send(t="log", m=traceback.format_exc())
-        send(t="finished", err=str(e) or e.__class__.__name__)
+        err = str(e) or e.__class__.__name__
+        try:
+            from . import pipeline as P
+            if P.disk_full(e) and not err.startswith("Disk full"):
+                err = P.disk_full_text(job.out)
+        except Exception:
+            pass
+        send(t="finished", err=err)
         return 1
 
 

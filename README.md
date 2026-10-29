@@ -15,7 +15,15 @@ It is a desktop app (PySide6), not a ComfyUI workflow: each model is loaded and 
 Python, one at a time, so a 24 GB card is enough. A few models (MoGe-3, LTX-2.5, SAM 3.1) only
 exist in ComfyUI's code, so LAA imports that code **as a library** (no server, no web UI).
 
-<!-- screenshot / video here -->
+![LiveActionAOVs on a military plate: plate, segmentation, normals, depth, albedo, alpha](docs/military_aovs.jpg)
+
+**Two alpha modes.** *Selection* (MatAnyone 2) mattes exactly what you selected on page 1: here the two
+soldiers and their rifles, one layer per number. *Foreground* (LTX) is "automatic": the model decides
+by itself what the foreground is. It has no prompt or mask input, so you cannot choose what it keeps.
+
+![Alpha: plate, Selection (MatAnyone 2), Foreground (LTX)](docs/military_alpha.jpg)
+
+<sub>Plate: [ActionVFX](https://www.actionvfx.com). One frame of a 50-frame shot, every pass written to the same EXR.</sub>
 
 ## Requirements
 
@@ -23,6 +31,7 @@ exist in ComfyUI's code, so LAA imports that code **as a library** (no server, n
 - [git](https://git-scm.com), and [uv](https://docs.astral.sh/uv/) or Python 3.13
 - ~50 GB of disk for the models (~80 GB with Cosmos). If you already use ComfyUI, the models you
   have are reused.
+- Room for the cache next to your plate: ~50 MB per 2K frame (a few GB per shot).
 
 ## Install
 

@@ -32,9 +32,13 @@ def _code():
         sys.path.insert(0, d)
     try:                                      # their inference module imports imageio for a helper we do not use
         import imageio  # noqa: F401  (pyflakes: only checks that it is there)
-    except ImportError:
-        import types
+    except ImportError:                       # not installed: a stand-in only while their code is imported,
+        import types                          # then removed (diffusers, for Cosmos, checks imageio too)
         sys.modules["imageio"] = types.ModuleType("imageio")
+        try:
+            import matanyone2.inference.inference_core  # noqa: F401
+        finally:
+            sys.modules.pop("imageio", None)
     return d
 
 
