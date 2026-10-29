@@ -32,6 +32,7 @@ ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 STYLE = """
 * { font-family: 'Segoe UI Variable Text', 'Segoe UI', 'SF Pro Text', sans-serif; font-size: 13px; color: #ececec; }
 QMainWindow, QDialog { background: #1c1c1e; }
+QToolTip { background: #2c2c2e; color: #ececec; border: 1px solid #3a3a3c; padding: 4px 6px; }
 QWidget#side { background: #232325; border-left: 1px solid #2f2f31; }
 QLabel#h1 { font-size: 20px; font-weight: 600; }
 QLabel#h2 { font-size: 12px; font-weight: 600; color: #8e8e93; }
