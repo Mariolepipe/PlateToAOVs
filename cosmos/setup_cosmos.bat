@@ -36,7 +36,7 @@ if errorlevel 1 (
 echo === Installing Cosmos inside Ubuntu (long: about 30 GB to download) ===
 wsl -d %DISTRO% --cd "%~dp0." -- bash ./setup_cosmos.sh || goto :fail
 echo.
-echo Done. In LiveActionAOVs: Albedo ^> Best ^(Cosmos^).
+echo Done. In LiveActionAOVs: Albedo ^> Best ^(Cosmos^), and Advanced settings ^> Cosmos runs ^> In WSL.
 pause
 exit /b 0
 
