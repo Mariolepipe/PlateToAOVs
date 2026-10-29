@@ -67,10 +67,11 @@ STEP_NAMES = [s[0] for s in STEPS]
 STEP_VERSION = {"people": 4,              # 4: SAM 2.1 keyframes + propagation (Sammie-Roto style)
                 "seg": 2,                 # 2: single-channel PNGs were written mirrored
                 "albedo": 3,              # 2: face crops on the head only, 3: blend inside the head
-                "alpha": 8,               # 4: one crop per numbered person (SAM3), 5: objects = SAM mask
+                "alpha": 9,               # 4: one crop per numbered person (SAM3), 5: objects = SAM mask
                                           # 6: what a person holds stays in their alpha again
                                           # 7: no bleed from people you did not select
                                           # 8: Foreground (LTX, whole frame) / Selection (MatAnyone 2)
+                                          # 9: Selection: no seam where two numbers touch
                 "crops": 3,               # 2: one crop per numbered person, 3: the crop holds all of them
                 "write": 3}               # 2: passes can be turned off, 3: people id layer
 
@@ -838,7 +839,11 @@ class Job(object):
         m = None
         out_dir = os.path.join(self.cache, "alpha", "numbers")
         os.makedirs(out_dir, exist_ok=True)
-        combined = np.zeros((self.n, h, w), np.float32)
+        combined = np.zeros((self.n, h, w), np.float32)    # the most opaque of the numbers...
+        added = np.zeros((self.n, h, w), np.float32)       # ...and their sum, used where two touch
+        near = np.zeros((self.n, h, w), np.uint8)          # how many numbers are close to each pixel
+        r = max(2, int(round(min(h, w) * 0.01)))
+        ker = np.ones((2 * r + 1, 2 * r + 1), np.uint8)
         try:
             for j, k in enumerate(nums):
                 self.check()
@@ -871,12 +876,22 @@ class Job(object):
                     a8 = np.clip(a * 255.0 + 0.5, 0, 255).astype(np.uint8)
                     os.makedirs(os.path.dirname(kept), exist_ok=True)
                     np.save(kept, a8)
-                combined = np.maximum(combined, a8.astype(np.float32) / 255.0)
+                ak = a8.astype(np.float32) / 255.0
+                combined = np.maximum(combined, ak)
+                added += ak
+                for i in range(self.n):
+                    if masks[i].any():
+                        near[i] += cv2.dilate(masks[i].astype(np.uint8), ker) > 0
                 np.save(os.path.join(out_dir, "%d.npy" % k), a8)
         finally:
             if m is not None:
                 m.release()
                 del m
+        # where two numbers touch (a rifle on a body, one person in front of another) each one has a
+        # soft edge there: the most opaque of the two stays grey (a seam). Their sum closes it.
+        seam = near >= 2
+        combined[seam] = np.minimum(added[seam], 1.0)
+        del added, near, seam
         for i in range(self.n):
             a = combined[i]
             if (h, w) != (H, W):

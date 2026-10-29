@@ -1410,6 +1410,7 @@ class Main(QtWidgets.QMainWindow):
                     return
                 e["keys"], e["auto"] = [], True   # SAM 3.1 numbers people its own way: start clean
                 e["names"], e["kinds"] = {}, {}
+                e["removed"], e["same"] = [], {}  # they were about the old numbers
                 self.job.save_people_edits(e)
                 self.pending, self.history = {}, []
                 self.previews.clear()
@@ -1881,6 +1882,11 @@ class Main(QtWidgets.QMainWindow):
         used = set(self.job._read_done("people").get("ids", [])) if self._people_ready() else set()
         used |= {int(k["target"]) for k in self._keys()}
         used |= {int(t) for _, t in self.pending}
+        e = self.job.people_edits()               # numbers still named / unticked / merged from before
+        used |= {int(k) for k in e.get("removed", [])}
+        for d in (e.get("same", {}), e.get("names", {}), e.get("kinds", {})):
+            used |= {int(k) for k in d}
+        used |= {int(v) for v in e.get("same", {}).values()}
         return max(used | {0}) + 1
 
     def _view_click(self, fx, fy, button):
