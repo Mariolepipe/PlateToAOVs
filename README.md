@@ -44,12 +44,19 @@ by itself what the foreground is. It has no prompt or mask input, so you cannot 
 
    Everything it found is written to `config.json` (edit it to add model folders). It also makes a
    **LiveActionAOVs** shortcut (LAA icon) on your Desktop; `make_shortcut.bat` makes it again.
-3. **`run.bat`** (no console window; `run_debug.bat` opens the app with one, to see everything it prints). At start-up the **Models** window lists what each pass needs (people, normals,
-   depth, alpha, albedo), what is already on your PC, and downloads the rest with one click. It is
-   also at the bottom right of the app, next to *Log*. Some models are **gated**: the window links
-   their Hugging Face page (log in, accept the license) and asks for a READ token
-   ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)). The token is not saved
-   by LAA (tick *Remember* to let Hugging Face keep it).
+3. **`run.bat`** or the shortcut (no console window; `run_debug.bat` opens the app with one, to see
+   everything it prints). At start-up the **Models** window lists what each pass needs, what is
+   already on your PC, and downloads the rest with one click. It is also at the bottom right of the
+   app, next to *Log*.
+
+   ![Models window](docs/ui_6_models.jpg)
+
+   Some models are **gated** (SAM 3.1, LTX-2.5, Cosmos): their authors want you to accept their
+   license first. The window links their Hugging Face page: log in, accept the license, then create
+   a READ token ([huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)) and paste
+   it when the app asks. It is how Hugging Face knows the download comes from an account that
+   accepted the license. The token is not saved by LAA (tick *Remember* to let Hugging Face keep it,
+   like ComfyUI does). The other models download without one.
 
 ### Models
 
@@ -73,28 +80,50 @@ paid work. LAA does not ship any weights.
 
 The app has two pages, like [Sammie-Roto](https://github.com/Zarxrax/Sammie-Roto).
 
-**1 · Segmentation.** Choose one frame of the plate (EXR, PNG, JPG… or a folder) and its color space
-(sRGB, linear, ACEScg). It loads in the background and you can start right away:
-- **Find**: SAM 3.1 finds what you type (English, comma separated: `person`, `person, car`, `house`…),
-  then SAM 2.1 tracks each one through the shot. Anything that is not a person becomes an object.
-- **New object** (in the list next to *Select with clicks*): a car, a prop… anything that is not a
-  person. Objects are tracked the same way and get an alpha and a `people.id` number, but no
-  Sapiens body crop (their normals come from MoGe).
-- **Select with clicks**: on a frame, **left click = this person, right click = not this person**,
-  the result shows at once. On someone Find already found, a left click adds the part under it (the
-  rifle they hold…) and a right click removes it; everyone else stays as found. Every frame you click on becomes a keyframe; **Propagate** tracks
-  everyone through the shot using all your keyframes. Wrong further on? Go there, click, Propagate.
+### 1 · Segmentation
 
-Each person gets a number, and you can give them a name (type it next to the number, also for
-someone you just added): the EXRs carry a `people/names` header that maps each `people.id` value
-to its name. Untick someone to ignore them, use *Same as* to merge two numbers.
-What you include in a person (a rifle, a bag…) is part of their crops and alpha.
-**Clear all** starts again from nothing. Then **Next: AOVs**.
+Choose one frame of the plate (EXR, PNG, JPG… or a folder), its color space (sRGB, linear, ACEScg)
+and, if you want, the frame range. It loads in the background and you can start right away.
 
-**2 · AOVs.** Tick the passes you want, press **Generate**. Each step runs on the whole shot and is
-cached in `<output>/_cache/`: change one setting and only the steps that depend on it run again.
-**Cancel** stops at once (the job runs in its own process). The viewer follows the step being
-computed; mouse wheel = zoom, F = fit, arrows = frames, Space = play.
+**Find** (SAM 3.1) finds what you type, in English, comma separated (`person`, `person, car`,
+`house`…), then SAM 2.1 tracks each one through the shot. Each one gets a number and a colour.
+
+![Find everyone: two people, numbered](docs/ui_1_find.jpg)
+
+**Select with clicks** fixes or adds what Find missed. Pick who in the list next to the button,
+then click on the frame: **left click = add, right click = remove**, the result shows at once.
+On someone Find already found, a left click adds the part under it (here the rifle the soldier at
+the back holds) and everyone else stays as found. Every frame you click on becomes a keyframe;
+**Propagate** tracks everyone through the shot, forward and backward from your keyframes.
+Wrong further on? Go there, click, Propagate. *New person* / *New object* add someone or something
+Find did not see.
+
+![Select with clicks: a left click adds the rifle to person 1](docs/ui_2_clicks.jpg)
+
+**Same as** merges two numbers. If Find gives a rifle its own number (`person, rifle`), set it to
+*Same as* the soldier holding it: they become one number, one alpha, one `people.id`. Keep things
+that belong together on one number: two numbers that touch are matted separately.
+
+![Same as: each rifle merged with the soldier who holds it](docs/ui_3_same_as.jpg)
+
+Anything found that is not a person (a rifle, a car, a house) is an **object**: tracked the same way,
+with an alpha and a `people.id` number, but no Sapiens body crop (its normals come from MoGe).
+Untick a number to leave it out. Give names if you want (type them next to the number): the EXRs
+carry a `people/names` header that maps each `people.id` value to its name. **Clear all** starts
+again from nothing. Then **Next: AOVs**.
+
+### 2 · AOVs
+
+Tick the passes you want, press **Generate**. Each step runs on the whole shot and is cached in
+`<output>/_cache/`: change one setting and only the steps that depend on it run again. **Cancel**
+stops at once (the job runs in its own process). The viewer follows the step being computed;
+mouse wheel = zoom, F = fit, arrows = frames, Space = play.
+
+![AOVs page: the normals of the shot](docs/ui_4_aovs.jpg)
+
+On the Alpha view, **Over plate** shows the alpha in red over the plate, to check its edges.
+
+![Alpha over the plate](docs/ui_5_alpha_over.jpg)
 
 **Output**: `<output>/<name>_aovs.<frame>.exr` with the plate's frame numbers, half float by
 default. In Nuke: a Read with *raw data* ticked, then Shuffle the layers.
@@ -103,8 +132,8 @@ default. In Nuke: a Read with *raw data* ticked, then Shuffle the layers.
 **developer mode** that shows the inner steps in the viewer (Sapiens body parts, crops, MoGe vs
 Sapiens normals, blend mask, stabilization checks…).
 
-Batch mode: `run_cli.bat --input "C:\shots\plate.####.exr" --colorspace acescg`
-(`--list-settings` prints every setting).
+Batch mode, without the window (for scripts or a farm, no clicks: Find only):
+`run_cli.bat --input "C:\shots\plate.####.exr" --colorspace acescg` (`--list-settings` prints every setting).
 
 ## How it works
 
