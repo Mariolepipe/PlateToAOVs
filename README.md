@@ -157,7 +157,8 @@ Double-clicked, it asks for the plate.
 
 **Known limits.** MoGe struggles with the sky around people (visible in N; you rarely relight the
 sky: relight the people through the alpha). MatAnyone 2 was trained on people: on objects it is good
-but less refined. The Foreground mode (LTX) cannot be told what to matte.
+but less refined. Cosmos is slow (10 to 30 min per 57 frames on a 24 GB card) and its progress bar
+only moves once per 57-frame chunk: it is working, not stuck. The Foreground mode (LTX) cannot be told what to matte.
 
 ## Develop
 

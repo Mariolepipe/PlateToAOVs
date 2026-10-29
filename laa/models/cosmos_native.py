@@ -29,6 +29,7 @@ from .cosmos import CosmosRenderer
 
 INVERSE = "Diffusion_Renderer_Inverse_Cosmos_7B"
 VAE = "Cosmos-1.0-Tokenizer-CV8x8x8"
+SLOW = "slow, not stuck: 10-30 min per 57 frames, the bar moves once per chunk"
 GBUFFER = {"basecolor": 0, "metallic": 1, "roughness": 2, "normal": 3, "depth": 4}
 
 
@@ -133,7 +134,7 @@ class CosmosNative(CosmosRenderer):
 
         def step(*a, **k):
             me._step += 1
-            me.say("%s  step %d of %d" % (me._label, me._step, int(me.s.cosmos_steps)))
+            me.say("%s  step %d of %d  (%s)" % (me._label, me._step, int(me.s.cosmos_steps), SLOW))
             return orig(*a, **k)
 
         sch.step = step
@@ -163,7 +164,7 @@ class CosmosNative(CosmosRenderer):
                         raise InterruptedError()
                     self._label = "Cosmos %s, frames %d-%d of %d" % (p, idxs[0] + 1, idxs[-1] + 1, n)
                     self._step = 0
-                    self.say(self._label)
+                    self.say("%s  (%s)" % (self._label, SLOW))
                     batch = {"rgb": x, "video": x,
                              "context_index": torch.full((1, 1), GBUFFER[p], dtype=torch.long)}
                     m = getattr(self.pipe, "model", None)
