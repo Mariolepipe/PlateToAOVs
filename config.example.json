@@ -1,0 +1,9 @@
+{
+  "comfyui_dir": "C:/path/to/ComfyUI",
+  "model_dirs": [
+    "C:/path/to/ComfyUI/models",
+    "models"
+  ],
+  "sapiens2_repo": "vendor/sapiens2",
+  "vda_code": "vendor/vda"
+}

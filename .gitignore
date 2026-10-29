@@ -1,0 +1,23 @@
+# local, written by setup.bat
+/.venv/
+/vendor/
+/models/
+/config.json
+/constraints.txt
+*.lnk
+
+# Python
+__pycache__/
+*.pyc
+
+# outputs and media
+aovs_*/
+*.exr
+*.mp4
+*.mov
+
+# editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

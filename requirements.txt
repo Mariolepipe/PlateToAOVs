@@ -1,0 +1,28 @@
+# torch / torchvision are installed by setup.bat (CUDA 13.0 wheels, same as your ComfyUI)
+PySide6>=6.7
+numpy
+opencv-python
+scipy
+pillow
+safetensors>=0.4
+huggingface_hub>=0.23
+tqdm
+# Sapiens2 code
+iopath
+prettytable
+termcolor
+accelerate
+rich
+transformers
+timm
+matplotlib
+# Video Depth Anything code
+easydict
+# albedo (Cosmos via Materia, Marigold IID)
+diffusers>=0.33
+einops
+# SAM 2.1 code (vendor/sam2)
+hydra-core>=1.3.2
+# MatAnyone 2 code (vendor/MatAnyone2)
+omegaconf
+imageio
