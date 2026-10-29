@@ -227,6 +227,18 @@ class Job(object):
         kinds.update(self.people_edits().get("kinds", {}))           # what you added / changed
         return {int(k) for k, v in kinds.items() if v == "object"}
 
+    def object_mask(self, i, H, W):
+        """bool (H, W): pixels of the numbers marked as objects, also when they are "same as" a person
+        (a rifle merged with the soldier holding it: one number, one alpha, but MoGe normals)"""
+        import cv2
+        objs = list(self.object_ids())
+        if not objs or not os.path.isfile(self.cpath("people", i, "png")):
+            return np.zeros((H, W), bool)
+        raw = self.people_ids(i, final=False)
+        if raw.shape != (H, W):
+            raw = cv2.resize(raw, (W, H), interpolation=cv2.INTER_NEAREST)
+        return np.isin(raw, objs) & (self.people_ids_full(i, H, W) > 0)
+
     def person(self, i, objects=False, with_objects=True):
         """bool (H, W): people pixels. Sapiens2 edge, but only where a kept person (SAM) is.
         objects=True also keeps everything inside each person's SAM mask (the rifle you clicked as
@@ -242,8 +254,7 @@ class Job(object):
         import cv2
         H, W = p.shape
         full = self.people_ids_full(i, H, W)
-        objs = list(self.object_ids())
-        obj = np.isin(full, objs) if objs else np.zeros((H, W), bool)
+        obj = self.object_mask(i, H, W)
         people = (full > 0) & ~obj                # the numbers that are people, with what they hold
         r = max(2, int(H * 0.01))
         keep = cv2.dilate(people.astype(np.uint8), np.ones((2 * r + 1, 2 * r + 1), np.uint8)) > 0
@@ -570,9 +581,9 @@ class Job(object):
             if self.people_on():                  # one crop per numbered person, even when they touch
                 H, W = person.shape[1:]
                 ids = np.stack([self.people_ids_full(i, H, W) for i in range(c0, c1)])
-                objs = self.object_ids()
-                if objs:                                  # objects: no body / head crop (Sapiens = humans)
-                    ids = np.where(np.isin(ids, list(objs)), 0, ids)
+                if self.object_ids():                     # objects: no body / head crop (Sapiens = humans)
+                    obj = np.stack([self.object_mask(i, H, W) for i in range(c0, c1)])
+                    ids = np.where(obj, 0, ids)
                 person = person & (ids > 0)               # body pixels (heads); the boxes use the ids
             fb, nb = C.chunk_boxes(person, head, s.crop_padding, s.head_pass, s.head_fraction, ids=ids)
             boxes += fb
@@ -915,7 +926,7 @@ class Job(object):
         objs = self.object_ids()
         if not objs:
             return np.zeros((H, W), np.float32)
-        m = np.isin(self.people_ids_full(i, H, W), list(objs)).astype(np.float32)
+        m = self.object_mask(i, H, W).astype(np.float32)
         return cv2.GaussianBlur(m, (0, 0), max(0.8, H / 1200.0))
 
     def _alpha_objects_only(self):
@@ -1182,7 +1193,7 @@ class Job(object):
                          if v and int(k) not in set(int(x) for x in e.get("removed", [])) and k not in e.get("same", {})}
                 if names:
                     attrs["people/names"] = json.dumps(names, sort_keys=True)
-                objs = sorted(self.object_ids())
+                objs = sorted(k for k in self.object_ids() if str(k) not in e.get("same", {}))
                 if objs:
                     attrs["people/objects"] = ",".join(str(k) for k in objs)
 

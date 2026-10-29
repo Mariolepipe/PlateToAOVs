@@ -85,8 +85,8 @@ The app has two pages, like [Sammie-Roto](https://github.com/Zarxrax/Sammie-Roto
 Choose one frame of the plate (EXR, PNG, JPG… or a folder), its color space (sRGB, linear, ACEScg)
 and, if you want, the frame range. It loads in the background and you can start right away.
 
-**Find** (SAM 3.1) finds what you type, in English, comma separated (`person`, `person, car`,
-`house`…), then SAM 2.1 tracks each one through the shot. Each one gets a number and a colour.
+**Find** (SAM 3.1) finds what you type, in English, comma separated (for example `person`, or
+`person, car, house`), then SAM 2.1 tracks each one through the shot. Each one gets a number and a colour.
 
 ![Find everyone: two people, numbered](docs/ui_1_find.jpg)
 
@@ -100,9 +100,11 @@ Find did not see.
 
 ![Select with clicks: a left click adds the rifle to person 1](docs/ui_2_clicks.jpg)
 
-**Same as** merges two numbers. If Find gives a rifle its own number (`person, rifle`), set it to
-*Same as* the soldier holding it: they become one number, one alpha, one `people.id`. Keep things
-that belong together on one number: two numbers that touch are matted separately.
+**Same as** merges two numbers: they become one number, one alpha, one `people.id`. Useful for what
+a person holds: find it as an object (`person, rifle`), then set it to *Same as* the soldier holding
+it. The rifle is part of their matte, and it stays an object for the normals: MoGe does it, not
+Sapiens (which only knows bodies). Keep what belongs together on one number: two numbers that touch
+are matted separately.
 
 ![Same as: each rifle merged with the soldier who holds it](docs/ui_3_same_as.jpg)
 

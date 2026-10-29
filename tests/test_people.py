@@ -120,6 +120,16 @@ try:
     print("   object alpha on its SAM mask: %.2f" % a3[b3o].mean())
     assert a3[b3o].mean() > 0.9
     assert OpenEXR.File(job.exr_path(2)).header()["people/objects"] == "2"
+    # the object "same as" person 1 (a rifle merged with who holds it): one number, but still MoGe normals
+    e = job.people_edits(); e["same"] = {"2": "1"}; job.save_people_edits(e)
+    js = Job(s, log=lambda *_: None)
+    H3, W3 = js.plate(3).shape[:2]
+    merged = js.people_ids_full(3, H3, W3)
+    print("   object same as 1: number there %s, object mask %.2f, normals (Sapiens) mask %.2f"
+          % (sorted(set(np.unique(merged[b3o]).tolist())), js.object_mask(3, H3, W3)[b3o].mean(), js.person(3)[b3o].mean()))
+    assert set(np.unique(merged[b3o]).tolist()) <= {0, 1} and js.object_mask(3, H3, W3)[b3o].mean() > 0.9
+    assert js.person(3)[b3o].mean() < 0.02
+    e = job.people_edits(); e["same"] = {}; job.save_people_edits(e)
     # only objects (both numbers): no Sapiens step at all, MoGe normals everywhere, alpha = SAM masks
     e = job.people_edits(); e["kinds"] = {"1": "object", "2": "object"}; job.save_people_edits(e)
     logs.clear(); Job(s, log=logs.append).run()
