@@ -101,10 +101,9 @@ Find did not see.
 ![Select with clicks: a left click adds the rifle to person 1](docs/ui_2_clicks.jpg)
 
 **Same as** merges two numbers: they become one number, one alpha, one `people.id`. Useful for what
-a person holds: find it as an object (`person, rifle`), then set it to *Same as* the soldier holding
-it. The rifle is part of their matte, and it stays an object for the normals: MoGe does it, not
-Sapiens (which only knows bodies). Keep what belongs together on one number: two numbers that touch
-are matted separately.
+a person holds: if Find gives a rifle its own number (`person, rifle`), set it to *Same as* the
+soldier holding it, and it is part of their matte. Keep what belongs together on one number: two
+numbers that touch are matted separately.
 
 ![Same as: each rifle merged with the soldier who holds it](docs/ui_3_same_as.jpg)
 
