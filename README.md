@@ -69,7 +69,7 @@ read them before using LAA on paid work.
 | tracking them | SAM 2.1 Hiera Large | [facebookresearch/sam2](https://github.com/facebookresearch/sam2) (Apache-2.0) |
 | people mask, people normals | Sapiens2 1b seg + normal | [facebook/sapiens2](https://huggingface.co/collections/facebook/sapiens2) (`sapiens2-seg-1b`, `sapiens2-normal-1b`, Sapiens2 License) |
 | set normals, camera | MoGe-3 ViT-G | [Comfy-Org/MoGe](https://huggingface.co/Comfy-Org/MoGe) (`moge_3_vitg_fp16`), from [microsoft/MoGe](https://github.com/microsoft/MoGe) |
-| depth | Video Depth Anything, metric, Large | [depth-anything/Metric-Video-Depth-Anything-Large](https://huggingface.co/depth-anything/Metric-Video-Depth-Anything-Large) |
+| depth | Video Depth Anything, metric, Large | [depth-anything/Metric-Video-Depth-Anything-Large](https://huggingface.co/depth-anything/Metric-Video-Depth-Anything-Large) (CC-BY-NC-4.0, non-commercial) |
 | alpha: Selection | MatAnyone 2 | [pq-yang/MatAnyone2](https://github.com/pq-yang/MatAnyone2) (S-Lab License, non-commercial) |
 | alpha: Foreground | LTX-2.5 distilled int8, Gemma text encoder, VAE | [Lightricks/LTX-2.5](https://huggingface.co/Lightricks/LTX-2.5) (gated) |
 | alpha: Foreground | LTX-2.5 IC-LoRA Alpha Gen | [Lightricks/LTX-2.5-22b-IC-LoRA-Alpha-Gen](https://huggingface.co/Lightricks/LTX-2.5-22b-IC-LoRA-Alpha-Gen) (gated) |
@@ -133,6 +133,7 @@ Sapiens normals, blend mask, stabilization checks…).
 
 **Batch mode**, without the window (scripts, a farm; Find only, no clicks):
 `run_cli.bat --input "C:\shots\plate.####.exr" --colorspace acescg` (`--list-settings` prints every setting).
+Double-clicked, it asks for the plate.
 
 ## How it works
 
