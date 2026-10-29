@@ -3,7 +3,7 @@ SAM 2.1 (Meta) video predictor, used the way Sammie-Roto uses it: points on any 
 ("keyframes"), an instant mask on that frame, then one propagation through the shot that uses ALL
 the frames you clicked as references at the same time.
 
-Code: the official repo, cloned into vendor/sam2 (download_sam2.bat). Weights:
+Code: the official repo, cloned into vendor/sam2 by setup.bat. Weights:
 models/sam2/sam2.1_hiera_large.pt (from Meta, no access request).
 """
 
@@ -28,7 +28,7 @@ def repo_dir():
 def _import():
     d = repo_dir()
     if not os.path.isfile(os.path.join(d, "sam2", "build_sam.py")):
-        raise RuntimeError("SAM 2 code missing in vendor/sam2: run download_sam2.bat.")
+        raise RuntimeError("SAM 2 code missing in vendor/sam2: run setup.bat again.")
     if d not in sys.path:
         sys.path.insert(0, d)
     from sam2.build_sam import build_sam2_video_predictor

@@ -138,7 +138,6 @@ good but less refined. The Foreground mode (LTX) cannot be told what to matte.
   in `STEPS` (settings and upstream steps it depends on), its layers in `step_write`.
 - Test a first install on your own PC: `set LAA_FRESH_TEST=1` (and `HF_HOME` to an empty folder) before
   `setup.bat` / `run.bat`: your ComfyUI and models are not detected, the app starts with fresh settings.
-- `bench_moge.bat <aovs folder>`: MoGe speed with and without `torch.inference_mode()`.
 
 ## Credits
 
