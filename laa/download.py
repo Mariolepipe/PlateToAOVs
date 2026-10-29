@@ -7,7 +7,7 @@ The app asks at start-up (Models window). From a terminal:
     python -m laa.download people|normals|depth|matanyone|alpha|albedo        what one feature needs
     python -m laa.download all         core + LTX (Foreground alpha, ~38 GB) + Cosmos (albedo, ~30 GB)
 
-Gated repos (LTX-2.5, Cosmos, SAM 3.1): accept the license on their Hugging Face page first,
+Gated repos (LTX-2.5, Cosmos): accept the license on their Hugging Face page first,
 then enter a READ token when asked (huggingface.co > Settings > Access Tokens)."""
 import os
 import sys
@@ -77,8 +77,7 @@ def depth():
         print("  already there: %s" % s.vda_model)
 
 
-def sam3():
-    _login()
+def sam3():                                # Comfy-Org/sam3.1 is not gated: no token needed
     from .models.sam3 import download
     download()
 

@@ -22,7 +22,7 @@ def groups(s=None):
     ltx_on = s.alpha_enabled and s.alpha_source == "ltx"
     return [
         dict(key="people", title="Segmentation: SAM 3.1 + SAM 2.1", why="SAM 3.1 finds what you type, SAM 2.1 follows your clicks",
-             size="2.6 GB", gated=True, needed=bool(s.people_enabled),
+             size="2.6 GB", gated=False, needed=bool(s.people_enabled),   # Comfy-Org/sam3.1: no login needed
              licenses=[("SAM 3.1", "https://huggingface.co/Comfy-Org/sam3.1"),
                        ("SAM 2.1", "https://github.com/facebookresearch/sam2")],
              files=[s.sam3_model, SAM2_CKPT]),

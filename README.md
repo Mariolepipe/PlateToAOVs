@@ -51,7 +51,7 @@ it keeps.
 
    ![Models window](docs/ui_6_models.jpg)
 
-   Some models are **gated** (LTX-2.5, Cosmos; the app also asks for a token for SAM 3.1): their
+   Two models are **gated** (LTX-2.5 and Cosmos): their
    authors want you to accept their license first. Log in on their Hugging Face page (linked in the
    window), accept the license, create a READ token at
    [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) and paste it when the app
