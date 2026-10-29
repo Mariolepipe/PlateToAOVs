@@ -168,6 +168,8 @@ but less refined. The Foreground mode (LTX) cannot be told what to matte.
 - Test a first install on your own PC: `set LAA_FRESH_TEST=1` (and `HF_HOME` to an empty folder)
   before `setup.bat` / `run.bat`: your ComfyUI and models are not detected, and the app starts with
   fresh settings.
+  `LAA_MODEL_DIRS` (`;` separated) replaces the model folders of `config.json`, e.g. an empty folder to
+  test the Models window and the Hugging Face token.
 
 ## Credits
 
