@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs Cosmos DiffusionRenderer (inverse renderer only) inside WSL, for LiveActionAOVs.
+# Installs Cosmos DiffusionRenderer (inverse renderer only) inside WSL, for PlateToAOVs.
 # Run by setup_cosmos.bat. Safe to run again: every step is skipped when already done.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,15 +55,15 @@ for name in ("Diffusion_Renderer_Inverse_Cosmos_7B", "Cosmos-Tokenize1-CV8x8x8-7
 PY
 
 say "6/6 Test on one example image"
-mkdir -p /tmp/laa_cosmos_test/in /tmp/laa_cosmos_test/out
+mkdir -p /tmp/pta_cosmos_test/in /tmp/pta_cosmos_test/out
 python - <<'PY'
 import glob
 from PIL import Image
 src = sorted(glob.glob("asset/examples/image_examples/*"))[0]
-Image.open(src).convert("RGB").resize((1280, 704)).save("/tmp/laa_cosmos_test/in/00000.png")
+Image.open(src).convert("RGB").resize((1280, 704)).save("/tmp/pta_cosmos_test/in/00000.png")
 print("test image:", src)
 PY
-CUDA_HOME="$CONDA_PREFIX" PYTHONPATH="$(pwd)" python "$HERE/laa_cosmos.py" \
-  --in_dir /tmp/laa_cosmos_test/in --out_dir /tmp/laa_cosmos_test/out --passes basecolor --frames 1 --overlap 0
-ls -la /tmp/laa_cosmos_test/out/basecolor
-say "Cosmos is ready. In LiveActionAOVs: Albedo > Best (Cosmos)."
+CUDA_HOME="$CONDA_PREFIX" PYTHONPATH="$(pwd)" python "$HERE/pta_cosmos.py" \
+  --in_dir /tmp/pta_cosmos_test/in --out_dir /tmp/pta_cosmos_test/out --passes basecolor --frames 1 --overlap 0
+ls -la /tmp/pta_cosmos_test/out/basecolor
+say "Cosmos is ready. In PlateToAOVs: Albedo > Best (Cosmos)."

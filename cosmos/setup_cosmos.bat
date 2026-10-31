@@ -1,11 +1,11 @@
 @echo off
 rem  Step 2 of 2: Ubuntu in WSL, then Cosmos DiffusionRenderer inside it (~30 GB of weights).
-rem  Everything Linux lives in one virtual disk file in WSLDIR below (set LAA_WSL_DIR to put it on another drive).
+rem  Everything Linux lives in one virtual disk file in WSLDIR below (set PTA_WSL_DIR to put it on another drive).
 setlocal
 cd /d "%~dp0"
 set "DISTRO=Ubuntu-22.04"
-set "WSLDIR=%LAA_WSL_DIR%"
-if "%WSLDIR%"=="" set "WSLDIR=%LOCALAPPDATA%\LiveActionAOVs\WSL\Ubuntu-22.04"
+set "WSLDIR=%PTA_WSL_DIR%"
+if "%WSLDIR%"=="" set "WSLDIR=%LOCALAPPDATA%\PlateToAOVs\WSL\Ubuntu-22.04"
 
 wsl --status >nul 2>&1
 if errorlevel 1 (
@@ -36,7 +36,7 @@ if errorlevel 1 (
 echo === Installing Cosmos inside Ubuntu (long: about 30 GB to download) ===
 wsl -d %DISTRO% --cd "%~dp0." -- bash ./setup_cosmos.sh || goto :fail
 echo.
-echo Done. In LiveActionAOVs: Albedo ^> Best ^(Cosmos^), and Advanced settings ^> Cosmos runs ^> In WSL.
+echo Done. In PlateToAOVs: Albedo ^> Best ^(Cosmos^), and Advanced settings ^> Cosmos runs ^> In WSL.
 pause
 exit /b 0
 

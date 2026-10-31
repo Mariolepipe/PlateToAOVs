@@ -10,7 +10,7 @@ if not exist ".venv\Scripts\python.exe" (
   exit /b 1
 )
 if not "%~1"=="" goto :run
-echo LiveActionAOVs, batch mode ^(no window^). From a terminal:
+echo PlateToAOVs, batch mode ^(no window^). From a terminal:
 echo   run_cli.bat --input "C:\shots\plate.####.exr" --colorspace acescg
 echo   run_cli.bat --list-settings
 echo.
@@ -20,10 +20,10 @@ if not defined PLATE exit /b 0
 set "CS="
 set /p "CS=Color space: srgb, linear or acescg [srgb]: "
 if not defined CS set "CS=srgb"
-".venv\Scripts\python.exe" -m laa.cli --input %PLATE% --colorspace %CS%
+".venv\Scripts\python.exe" -m pta.cli --input %PLATE% --colorspace %CS%
 echo.
 pause
 exit /b
 :run
-".venv\Scripts\python.exe" -m laa.cli %*
+".venv\Scripts\python.exe" -m pta.cli %*
 if errorlevel 1 pause

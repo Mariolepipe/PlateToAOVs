@@ -1,4 +1,4 @@
-"""laa_cosmos.py chunking / cross-fade with a fake Cosmos pipeline (needs the cosmos repo for its dataset code)."""
+"""pta_cosmos.py chunking / cross-fade with a fake Cosmos pipeline (needs the cosmos repo for its dataset code)."""
 import sys, os, types, tempfile, numpy as np, runpy
 REPO = os.environ.get("COSMOS_REPO", os.path.expanduser("~/cosmos/cosmos1-diffusion-renderer"))
 sys.path.insert(0, REPO)
@@ -18,8 +18,8 @@ d = tempfile.mkdtemp(); din, dout = d + "/in", d + "/out"; os.makedirs(din)
 N = 130
 for i in range(N):
     Image.fromarray(np.full((704, 1280, 3), i, np.uint8)).save(din + "/%05d.png" % i)
-sys.argv = ["laa_cosmos.py", "--in_dir", din, "--out_dir", dout, "--passes", "basecolor", "roughness", "--overlap", "8"]
-runpy.run_path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cosmos", "laa_cosmos.py"), run_name="__main__")
+sys.argv = ["pta_cosmos.py", "--in_dir", din, "--out_dir", dout, "--passes", "basecolor", "roughness", "--overlap", "8"]
+runpy.run_path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cosmos", "pta_cosmos.py"), run_name="__main__")
 for p in ("basecolor", "roughness"):
     files = sorted(os.listdir(dout + "/" + p)); assert len(files) == N, (p, len(files))
     vals = [int(np.asarray(Image.open(dout + "/" + p + "/" + f))[0, 0, 0]) for f in files]

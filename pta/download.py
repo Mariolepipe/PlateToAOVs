@@ -2,10 +2,10 @@
 e.g. your ComfyUI models) are found by name and skipped.
 
 The app asks at start-up (Models window). From a terminal:
-    python -m laa.download             the core models: MoGe-3, SAM 3.1, SAM 2.1, Sapiens2, depth, MatAnyone 2
-    python -m laa.download moge|sam3|sam2|sapiens|depth|matanyone|ltx|cosmos   one of them
-    python -m laa.download people|normals|depth|matanyone|alpha|albedo        what one feature needs
-    python -m laa.download all         core + LTX (Foreground alpha, ~38 GB) + Cosmos (albedo, ~30 GB)
+    python -m pta.download             the core models: MoGe-3, SAM 3.1, SAM 2.1, Sapiens2, depth, MatAnyone 2
+    python -m pta.download moge|sam3|sam2|sapiens|depth|matanyone|ltx|cosmos   one of them
+    python -m pta.download people|normals|depth|matanyone|alpha|albedo        what one feature needs
+    python -m pta.download all         core + LTX (Foreground alpha, ~38 GB) + Cosmos (albedo, ~30 GB)
 
 Gated repos (LTX-2.5, Cosmos): accept the license on their Hugging Face page first,
 then enter a READ token when asked (huggingface.co > Settings > Access Tokens)."""
@@ -100,7 +100,7 @@ def cosmos():
 CORE = ["moge", "sam3", "sam2", "sapiens", "depth", "matanyone"]
 ALL = {"moge": moge, "sam3": sam3, "sam2": sam2, "sapiens": sapiens, "depth": depth, "matanyone": matanyone,
        "ltx": ltx, "cosmos": cosmos}
-# the groups of the app's Models window (laa.model_catalog)
+# the groups of the app's Models window (pta.model_catalog)
 GROUPS = {"people": ["sam3", "sam2"], "normals": ["sapiens", "moge"], "depth": ["depth"], "alpha": ["ltx"],
           "matanyone": ["matanyone"],
           "albedo": ["cosmos"]}

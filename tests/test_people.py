@@ -12,9 +12,9 @@ tmp = tempfile.mkdtemp()
 try:
     folder = os.path.join(tmp, "plate")
     make_plate2(folder)
-    from laa.config import Settings
-    from laa.pipeline import Job
-    from laa.stages import people as PP
+    from pta.config import Settings
+    from pta.pipeline import Job
+    from pta.stages import people as PP
     s = Settings(input_pattern=os.path.join(folder, "shot_020.####.png"), output_dir=os.path.join(tmp, "out"),
                  crop_chunk=4, ltx_chunk=4, stab_radius=0, depth_enabled=False, people_review=True)
     logs = []
@@ -80,7 +80,7 @@ try:
     assert json.loads(hdr["people/names"]) == {"1": "Front soldier", "2": "Back soldier"}, hdr.get("people/names")
 
     # Find with two prompts: "person, car" -> one SAM 3.1 pass each, the car is numbered as an object
-    from laa.models.sam3 import prompts, is_human
+    from pta.models.sam3 import prompts, is_human
     assert prompts(" Person , car,") == ["person", "car"] and is_human("soldier") and not is_human("house")
     s3 = Settings(**{**s.__dict__}); s3.output_dir = os.path.join(tmp, "out_prompts"); s3.people_prompt = "person, car"
     j3 = Job(s3, log=lambda *_: None); FakeSAM3.calls.clear(); j3.run(until="people")
@@ -157,13 +157,13 @@ try:
     # 6. a right click takes someone out of a person: person 1 = both (SAM3), "not this" on the one behind
     j = Job(s, log=lambda *_: None)
     a3, b3, _, _ = two(3)
-    os.makedirs(os.path.join(s.output_dir, "laa_people_keys"), exist_ok=True)
-    seq.write_png(os.path.join(s.output_dir, "laa_people_keys", "f00003_p1.png"), ((a3 | b3) * 255).astype(np.uint8))
+    os.makedirs(os.path.join(s.output_dir, "pta_people_keys"), exist_ok=True)
+    seq.write_png(os.path.join(s.output_dir, "pta_people_keys", "f00003_p1.png"), ((a3 | b3) * 255).astype(np.uint8))
     e = j.people_edits()
     e["same"] = {}
     yb, xb = np.where(b3)
     e["keys"] = [{"frame": 3, "target": 1, "points": [[float(xb.mean()), float(yb.mean()), 0]],
-                  "base": "laa_people_keys/f00003_p1.png"}]
+                  "base": "pta_people_keys/f00003_p1.png"}]
     j.save_people_edits(e)
     Job(s, log=lambda *_: None).run(until="people")
     j = Job(s, log=lambda *_: None)

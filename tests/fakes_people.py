@@ -5,7 +5,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
 from fakes import *
-import laa.models.sam3 as SM
+import pta.models.sam3 as SM
 
 
 def two(i):
@@ -94,7 +94,7 @@ class FakeSAM2Video:
 
 S.Sapiens2 = FakeSap2
 SM.SAM3People = FakeSAM3
-import laa.models.sam2 as S2
+import pta.models.sam2 as S2
 S2.SAM2Video = FakeSAM2Video
 
 

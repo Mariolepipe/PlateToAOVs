@@ -2,9 +2,9 @@
 Run by setup.bat: finds ComfyUI (only its code is used, as a library) and the models folders,
 or downloads ComfyUI into vendor/ComfyUI, then writes config.json. Standard library only.
 
-    python -m laa.setup_paths            interactive
-    python -m laa.setup_paths --yes      take what was found (or download ComfyUI) without asking
-    python -m laa.setup_paths --get      print the ComfyUI folder from config.json (for setup.bat)
+    python -m pta.setup_paths            interactive
+    python -m pta.setup_paths --yes      take what was found (or download ComfyUI) without asking
+    python -m pta.setup_paths --get      print the ComfyUI folder from config.json (for setup.bat)
 """
 
 import json
@@ -24,8 +24,8 @@ def is_comfy(d):
 
 
 def fresh_test():
-    """LAA_FRESH_TEST=1: behave as on a PC without ComfyUI (to test a first install)"""
-    return os.environ.get("LAA_FRESH_TEST") == "1"
+    """PTA_FRESH_TEST=1: behave as on a PC without ComfyUI (to test a first install)"""
+    return os.environ.get("PTA_FRESH_TEST") == "1"
 
 
 def desktop_app():
@@ -38,7 +38,7 @@ def candidates():
         return []
     env = os.environ.get
     home = os.path.expanduser("~")
-    roots = [env("LAA_COMFYUI", ""),
+    roots = [env("PTA_COMFYUI", ""),
              desktop_app(),
              os.path.join(home, "Documents", "ComfyUI"), os.path.join(home, "ComfyUI")]
     for drive in "CDEFG":

@@ -1,7 +1,7 @@
-"""MoGe frames start..n in a process of their own (python -m laa.moge_child req.json), started by
+"""MoGe frames start..n in a process of their own (python -m pta.moge_child req.json), started by
 Job.step_moge. If the CUDA driver gives up mid-shot, only this process dies: the frames written so far
-stay in the cache and step_moge starts a new one from the next frame. Same "@@LAA {json}" lines as
-laa.worker."""
+stay in the cache and step_moge starts a new one from the next frame. Same "@@PTA {json}" lines as
+pta.worker."""
 
 import json
 import sys

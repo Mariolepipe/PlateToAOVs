@@ -16,8 +16,8 @@ try:
     seq.write_png(os.path.join(tmp, "a.png"), a16)
     assert (seq.read_png(os.path.join(tmp, "a.png")) == a16).all(), "alpha mirrored"
     pattern = make_plate(os.path.join(tmp, "plate"))
-    from laa.config import Settings
-    from laa.pipeline import Job
+    from pta.config import Settings
+    from pta.pipeline import Job
     s = Settings(input_pattern=pattern, output_dir=os.path.join(tmp, "out"), alpha_source="ltx",
                  crop_chunk=4, ltx_chunk=4, stab_radius=1, comparison_layers=True, people_enabled=False)
     logs = []

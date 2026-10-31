@@ -1,17 +1,17 @@
 """
-The job runs in its own process (python -m laa.worker job.json), started by the UI.
+The job runs in its own process (python -m pta.worker job.json), started by the UI.
 Cancel = the UI kills this process: instant, even in the middle of loading a 21 GB model or a
 diffusion step, and Windows frees all its RAM / VRAM at once. Frames already written to the cache
 are kept (a step is only marked done when it finishes).
 
-Messages to the UI are single lines on stdout: "@@LAA {json}". Anything else printed (model
+Messages to the UI are single lines on stdout: "@@PTA {json}". Anything else printed (model
 libraries) is just log text.
 """
 
 import json
 import sys
 
-TAG = "@@LAA "
+TAG = "@@PTA "
 _OUT = sys.stdout          # kept: model code may redirect sys.stdout to silence its own prints
 
 

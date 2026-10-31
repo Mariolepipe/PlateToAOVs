@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-echo === LiveActionAOVs setup ===
+echo === PlateToAOVs setup ===
 echo Needs: Windows, an NVIDIA GPU (24 GB recommended), git, and uv or Python 3.13.
 echo.
 
@@ -32,8 +32,8 @@ if not exist "%UV%" (
 
 rem ---- 2. ComfyUI: yours if you have one (its models are reused), otherwise a copy in vendor\ComfyUI
 echo [2/5] ComfyUI code ^(used as a library, nothing is changed in it^)
-"%PY%" -m laa.setup_paths %* || goto :fail
-for /f "usebackq delims=" %%a in (`"%PY%" -m laa.setup_paths --get`) do set "COMFY=%%a"
+"%PY%" -m pta.setup_paths %* || goto :fail
+for /f "usebackq delims=" %%a in (`"%PY%" -m pta.setup_paths --get`) do set "COMFY=%%a"
 
 echo [3/5] torch 2.12.1 + CUDA 13.0
 set "TORCH_IDX=https://download.pytorch.org/whl/cu130"
@@ -79,7 +79,7 @@ if not exist "vendor\materia\diffusion_renderer_pipeline.py" (
 "%PY%" -c "import torch, PySide6; print('torch', torch.__version__, 'cuda', torch.cuda.is_available())" || goto :fail
 call make_shortcut.bat
 echo.
-echo Setup OK. Start the app with the LiveActionAOVs shortcut ^(Desktop^) or run.bat: it offers to download the models you need.
+echo Setup OK. Start the app with the PlateToAOVs shortcut ^(Desktop^) or run.bat: it offers to download the models you need.
 pause
 exit /b 0
 

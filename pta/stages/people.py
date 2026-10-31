@@ -7,10 +7,10 @@ Who is who: one number per person for the whole shot, as in Sammie-Roto.
                   this person. SAM 2.1 cuts that frame right away (live preview).
   Propagate     : SAM 2.1 follows everyone through the shot using ALL the keyframes at once.
 
-Edits (laa_people.json next to the EXRs), ids are the numbers shown in the viewer:
+Edits (pta_people.json next to the EXRs), ids are the numbers shown in the viewer:
   {"base": ..., "auto": true | false, "removed": [3], "same": {"4": 1},
    "keys": [{"frame": 12, "target": 2, "points": [[x, y, 1 | 0], ...],
-             "base": "laa_people_keys/f00012_p2.png" | null}],
+             "base": "pta_people_keys/f00012_p2.png" | null}],
    "validated": true}
 points are in plate pixels. "base" is the person's mask on that frame when you started clicking
 (working size), so the clicks replay exactly the same later.

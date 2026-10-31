@@ -2,14 +2,14 @@
 import os, sys, tempfile, shutil, json
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import numpy as np, torch, time
-SLOW = float(os.environ.get('LAA_FAKE_SLOW', '0'))
+SLOW = float(os.environ.get('PTA_FAKE_SLOW', '0'))
 
-from laa import config
-from laa.io import sequence as seq
-import laa.models.sapiens2 as S
-import laa.models.moge as M
-import laa.models.vda as V
-import laa.models.ltx_alpha as L
+from pta import config
+from pta.io import sequence as seq
+import pta.models.sapiens2 as S
+import pta.models.moge as M
+import pta.models.vda as V
+import pta.models.ltx_alpha as L
 
 H, W, N = 180, 420, 7
 def person_mask(i):
@@ -66,12 +66,12 @@ class FakeIID:
     def infer(self, rgb, seed=0):
         return {"albedo": np.full(rgb.shape, 0.5, np.float32), "roughness": np.full(rgb.shape[:2], 0.3, np.float32)}
 
-import laa.models.albedo as AL
-import laa.models.cosmos as CO
+import pta.models.albedo as AL
+import pta.models.cosmos as CO
 
 
 class FakeCosmos(CO.CosmosRenderer):
-    """writes what laa_cosmos.py would: <out>/<pass>/<i>.png, here = the letterboxed input itself"""
+    """writes what pta_cosmos.py would: <out>/<pass>/<i>.png, here = the letterboxed input itself"""
     def run(self, in_dir, out_dir, progress=None, cancel=None):
         from PIL import Image
         files = sorted(os.listdir(in_dir))
@@ -82,7 +82,7 @@ class FakeCosmos(CO.CosmosRenderer):
                 assert im.shape == (704, 1280, 3), im.shape
                 Image.fromarray(im).save(os.path.join(out_dir, p, f))
             progress and progress(k + 1, len(self.passes()))
-import laa.models.matanyone2 as MA
+import pta.models.matanyone2 as MA
 
 
 class FakeMatAnyone:
@@ -101,7 +101,7 @@ class FakeMatAnyone:
 def install_fakes():
     MA.MatAnyone2 = FakeMatAnyone
     S.Sapiens2 = FakeSap; M.MoGe = FakeMoGe; V.VDA = FakeVDA; L.LTXAlpha = FakeLTX; AL.MarigoldIID = FakeIID; CO.CosmosRenderer = FakeCosmos
-    import laa.models.cosmos_native as CN
+    import pta.models.cosmos_native as CN
     CN.CosmosNative = FakeCosmos
 install_fakes()
 

@@ -1,7 +1,7 @@
 """
 Which model files each feature needs, where they come from, and whether they are already on this
 PC (found by name in any model folder of config.json, e.g. your ComfyUI models). No torch import:
-the app checks this at start-up and offers to download what is missing (laa.download does it).
+the app checks this at start-up and offers to download what is missing (pta.download does it).
 """
 
 import os

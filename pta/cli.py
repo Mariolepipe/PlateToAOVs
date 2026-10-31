@@ -1,4 +1,4 @@
-"""Command line: python -m laa.cli --input D:/plate/plate.%04d.exr --colorspace acescg [--set key=value ...]"""
+"""Command line: python -m pta.cli --input D:/plate/plate.%04d.exr --colorspace acescg [--set key=value ...]"""
 
 import argparse
 import dataclasses
@@ -9,13 +9,13 @@ from .config import Settings
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(description="LiveActionAOVs: N / depth / P / alpha passes for Nuke, no ComfyUI server.")
+    ap = argparse.ArgumentParser(description="PlateToAOVs: N / depth / P / alpha passes for Nuke, no ComfyUI server.")
     ap.add_argument("--input", required=False, help="sequence: folder, plate.%%04d.exr, plate.####.exr or one frame")
     ap.add_argument("--output", default="", help="output folder (default: aovs_<name> next to the plate)")
     ap.add_argument("--colorspace", default=None, choices=["srgb", "linear", "acescg"])
     ap.add_argument("--first", type=int, default=None)
     ap.add_argument("--last", type=int, default=None)
-    ap.add_argument("--job", default="", help="laa_job.json of a previous run (settings)")
+    ap.add_argument("--job", default="", help="pta_job.json of a previous run (settings)")
     ap.add_argument("--until", default=None, help="stop after this step")
     ap.add_argument("--force", default="", help="comma separated steps to re-run")
     ap.add_argument("--set", action="append", default=[], help="any setting, e.g. --set alpha_source=matting")

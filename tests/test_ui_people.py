@@ -6,8 +6,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6 import QtWidgets, QtCore
-from laa import ui
-from laa.config import Settings
+from pta import ui
+from pta.config import Settings
 import fakes_people as FP
 import numpy as np
 
@@ -15,7 +15,7 @@ SHOTS = sys.argv[1] if len(sys.argv) > 1 else None
 
 
 def start_fake(self):
-    req = os.path.join(tempfile.gettempdir(), "laa_test_job_people.json")
+    req = os.path.join(tempfile.gettempdir(), "pta_test_job_people.json")
     with open(req, "w") as f:
         json.dump({"settings": dataclasses.asdict(self.settings), "force": list(self.force), "until": self.until}, f)
     self.proc.start(sys.executable, ["-u", os.path.join(HERE, "fake_worker_people.py"), req])
@@ -94,7 +94,7 @@ try:
         app.processEvents(); time.sleep(0.02)
     print("2. pending:", w.pending, "| hint:", w.fix_hint.text())
     assert list(w.pending) == [(3, 2)] and w.pending[(3, 2)]["points"][0][2] == 1
-    from laa.io import sequence as seq
+    from pta.io import sequence as seq
     pv = seq.read_png(w.previews[3])
     print("   live preview on frame 3, numbers:", sorted(set(np.unique(pv).tolist()) - {0}))
     assert sorted(set(np.unique(pv).tolist()) - {0}) == [1, 2]

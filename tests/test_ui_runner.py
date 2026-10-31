@@ -4,12 +4,12 @@ import os, sys, tempfile, shutil, time, json, dataclasses
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE)); sys.path.insert(0, HERE)
 from PySide6 import QtWidgets, QtCore
-from laa import ui
-from laa.config import Settings
+from pta import ui
+from pta.config import Settings
 import fakes
 
 def start_fake(self):
-    req = os.path.join(tempfile.gettempdir(), "laa_test_job.json")
+    req = os.path.join(tempfile.gettempdir(), "pta_test_job.json")
     with open(req, "w") as f:
         json.dump({"settings": dataclasses.asdict(self.settings), "force": list(self.force), "until": self.until}, f)
     self.proc.start(sys.executable, ["-u", os.path.join(HERE, "fake_worker.py"), req])
@@ -58,7 +58,7 @@ try:
     assert {"seg", "boxes", "moge", "merged", "final"} <= set(views), views
     w.dev = False; w._set_page("aovs")
     # cancel: slow fake segmentation (2 s / frame), cancel after 3 s
-    os.environ["LAA_FAKE_SLOW"] = "2"
+    os.environ["PTA_FAKE_SLOW"] = "2"
     w.s.seg_size = "0.4b"; w._apply_quick(w.s); w._refresh_job()
     ends.clear(); w._run(); w.runner.finished.connect(lambda e: ends.append(e))
     t0 = time.time()

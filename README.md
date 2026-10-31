@@ -1,4 +1,6 @@
-# LiveActionAOVs (LAA)
+# PlateToAOVs (PTA)
+
+<sub>Formerly *LiveActionAOVs*, renamed to avoid confusion with [LiveActionAOV](https://github.com/lettidude/LiveActionAOV), a different open-source tool with a similar goal (mattes, depth, normals, camera track, splat clean plate). Worth a look too!</sub>
 
 **AOVs from live-action plates, ready for Nuke.** Pick a plate, check who is who, press Generate:
 every frame comes out as one multi-layer EXR with
@@ -12,10 +14,10 @@ every frame comes out as one multi-layer EXR with
 | `people.id` | 0 = nobody, then one number per person or object | SAM 3.1 + SAM 2.1 |
 
 It is a desktop app (PySide6), not a ComfyUI workflow: the models are loaded one at a time and
-called directly in Python, so a 24 GB card is enough. For MoGe-3, LTX-2.5 and SAM 3.1, LAA uses
+called directly in Python, so a 24 GB card is enough. For MoGe-3, LTX-2.5 and SAM 3.1, PTA uses
 ComfyUI's implementation, imported **as a library** (no server, no web UI).
 
-![LiveActionAOVs on a military plate: plate, segmentation, normals, depth, albedo, alpha](docs/military_aovs.jpg)
+![PlateToAOVs on a military plate: plate, segmentation, normals, depth, albedo, alpha](docs/military_aovs.jpg)
 
 **Two alpha modes.** *Selection* (MatAnyone 2) mattes exactly what you selected on page 1: here the
 two soldiers and their rifles, one layer per number. *Foreground* (LTX) is "automatic": the model
@@ -35,7 +37,7 @@ it keeps.
 
 ## Install
 
-1. `git clone https://github.com/Mariolepipe/LiveActionAOVs.git` (or *Code > Download ZIP*, then extract it).
+1. `git clone https://github.com/Mariolepipe/PlateToAOVs.git` (or *Code > Download ZIP*, then extract it).
 2. **`setup.bat`** creates the app's own Python environment (`.venv`, your ComfyUI one is not
    touched) with PyTorch 2.12 + CUDA 13.0, then:
    - finds your ComfyUI (desktop app, portable, git clone…) and reuses its `models` folders,
@@ -43,7 +45,7 @@ it keeps.
    - downloads the official code of Sapiens2, Video Depth Anything, SAM 2.1, MatAnyone 2 and
      Materia into `vendor/`;
    - writes what it found to `config.json` (edit it to add model folders) and puts a
-     **LiveActionAOVs** shortcut on your Desktop (`make_shortcut.bat` makes it again).
+     **PlateToAOVs** shortcut on your Desktop (`make_shortcut.bat` makes it again).
 3. Start the app with the shortcut or **`run.bat`** (`run_debug.bat` opens it with a console, to see
    everything it prints). The **Models** window lists what each pass needs, shows what is already on
    your PC and downloads the rest with one click. It opens at start-up when something is missing,
@@ -56,12 +58,12 @@ it keeps.
    window), accept the license, create a READ token at
    [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens) and paste it when the app
    asks: that is how Hugging Face knows the download comes from an account that accepted the
-   license. LAA does not save the token (tick *Remember* to let Hugging Face keep it, like ComfyUI does).
+   license. PTA does not save the token (tick *Remember* to let Hugging Face keep it, like ComfyUI does).
 
 ### Models
 
-LAA ships no weights. Each model keeps its own license, and some are non-commercial or gated:
-read them before using LAA on paid work.
+PTA ships no weights. Each model keeps its own license, and some are non-commercial or gated:
+read them before using PTA on paid work.
 
 | used for | model | where |
 |---|---|---|
@@ -151,7 +153,7 @@ Double-clicked, it asks for the plate.
 | albedo | Cosmos DiffusionRenderer | a video model (57 frames at a time), so it is stable; or Marigold |
 | write | | multi-layer EXR + FOV / focal length metadata |
 
-**Cosmos on Windows.** NVIDIA's code needs Linux. LAA uses [Materia](https://github.com/NicholaiVogel/comfyui-materia)
+**Cosmos on Windows.** NVIDIA's code needs Linux. PTA uses [Materia](https://github.com/NicholaiVogel/comfyui-materia)
 (Biohazard VFX), a pure-PyTorch port that runs natively. Plan B: the official NVIDIA code in WSL
 (`cosmos/install_wsl.bat`, then `cosmos/setup_cosmos.bat`, then Advanced > Cosmos runs > In WSL).
 
@@ -164,12 +166,12 @@ only moves once per 57-frame chunk: it is working, not stuck. The Foreground mod
 
 - `tests/` runs the whole pipeline and the UI with fake models (no weights, CPU):
   `python tests/test_fake_pipeline.py`, `tests/test_people.py`, `tests/test_ui_runner.py`, `tests/test_ui_people.py`.
-- Add a pass: a model adapter in `laa/models/`, a `step_<name>` in `laa/pipeline.py` with its line in
+- Add a pass: a model adapter in `pta/models/`, a `step_<name>` in `pta/pipeline.py` with its line in
   `STEPS` (the settings and upstream steps it depends on), its layers in `step_write`.
-- Test a first install on your own PC: `set LAA_FRESH_TEST=1` (and `HF_HOME` to an empty folder)
+- Test a first install on your own PC: `set PTA_FRESH_TEST=1` (and `HF_HOME` to an empty folder)
   before `setup.bat` / `run.bat`: your ComfyUI and models are not detected, and the app starts with
   fresh settings.
-  `LAA_MODEL_DIRS` (`;` separated) replaces the model folders of `config.json`, e.g. an empty folder to
+  `PTA_MODEL_DIRS` (`;` separated) replaces the model folders of `config.json`, e.g. an empty folder to
   test the Models window and the Hugging Face token.
 
 ## Credits

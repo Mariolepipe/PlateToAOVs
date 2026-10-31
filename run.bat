@@ -6,4 +6,4 @@ if not exist ".venv\Scripts\pythonw.exe" (
   exit /b 1
 )
 rem pythonw: no black window. run_debug.bat shows everything in a console.
-start "" ".venv\Scripts\pythonw.exe" -m laa %*
+start "" ".venv\Scripts\pythonw.exe" -m pta %*

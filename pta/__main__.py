@@ -4,9 +4,9 @@ import sys
 
 def _log_file():
     """pythonw.exe (run.bat) has no console: what would be printed goes to a log file instead"""
-    d = os.path.join(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"), "LiveActionAOVs")
+    d = os.path.join(os.environ.get("LOCALAPPDATA") or os.path.expanduser("~"), "PlateToAOVs")
     os.makedirs(d, exist_ok=True)
-    return os.path.join(d, "laa.log")
+    return os.path.join(d, "pta.log")
 
 
 if sys.stdout is None or sys.stderr is None:
@@ -26,7 +26,7 @@ except BaseException:
     try:                                       # no console to read it in: show it
         from PySide6 import QtWidgets
         app = QtWidgets.QApplication.instance() or QtWidgets.QApplication(sys.argv)
-        QtWidgets.QMessageBox.critical(None, "LiveActionAOVs", "LAA could not start:\n\n" + text[-2000:]
+        QtWidgets.QMessageBox.critical(None, "PlateToAOVs", "PTA could not start:\n\n" + text[-2000:]
                                        + "\n\nrun_debug.bat shows the whole log.")
     except Exception:
         pass

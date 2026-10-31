@@ -1,11 +1,11 @@
 """
 Live clicks on the People page: SAM 2.1 stays loaded in this process while you click, each click
-re-cuts the frame in a fraction of a second (python -m laa.sam_server job.json, started by the UI).
+re-cuts the frame in a fraction of a second (python -m pta.sam_server job.json, started by the UI).
 
 stdin : one JSON command per line
           {"cmd": "preview", "id": 7, "frame": 12, "keys": [ ...the keyframes of that frame... ]}
           {"cmd": "quit"}
-stdout: "@@LAA {json}" lines, same as the worker
+stdout: "@@PTA {json}" lines, same as the worker
           {"t": "ready"} | {"t": "preview", "id": 7, "frame": 12, "path": ".../preview_00012_3.png"}
           {"t": "error", "id": 7, "m": "..."}
 The preview is the frame's id image: the people of the last propagation, with the people you are
@@ -16,7 +16,7 @@ import json
 import os
 import sys
 
-TAG = "@@LAA "
+TAG = "@@PTA "
 _OUT = sys.stdout
 
 

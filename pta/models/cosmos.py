@@ -4,7 +4,7 @@ normal, depth for 57-frame video chunks, temporally consistent.
 
 It only runs on Linux, so it lives in WSL (cosmos/setup_cosmos.bat installs it). This module:
   1. letterboxes the plate to the model's 1280x704 (no stretch) into <cache>/cosmos_in,
-  2. runs cosmos/laa_cosmos.py inside WSL on those frames,
+  2. runs cosmos/pta_cosmos.py inside WSL on those frames,
   3. un-letterboxes the outputs back to the plate size.
 """
 
@@ -79,7 +79,7 @@ class CosmosRenderer(object):
         return p
 
     def run(self, in_dir, out_dir, progress=None, cancel=None):
-        script = os.path.join(str(config.APP_DIR), "cosmos", "laa_cosmos.py")
+        script = os.path.join(str(config.APP_DIR), "cosmos", "pta_cosmos.py")
         cmd = ('source ~/miniforge3/etc/profile.d/conda.sh && conda activate cosmos-predict1 && '
                'cd ~/cosmos/cosmos1-diffusion-renderer && '
                'CUDA_HOME=$CONDA_PREFIX PYTHONPATH=$(pwd) python -u "%s" --in_dir "%s" --out_dir "%s" '
@@ -129,7 +129,7 @@ class CosmosRenderer(object):
     def stop(self):
         """kill the WSL side too: killing wsl.exe alone can leave the Linux process on the GPU."""
         try:
-            subprocess.run(["wsl", "-d", self.s.wsl_distro, "--exec", "pkill", "-f", "laa_cosmos.py"],
+            subprocess.run(["wsl", "-d", self.s.wsl_distro, "--exec", "pkill", "-f", "pta_cosmos.py"],
                            timeout=10, creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0)
         except Exception:
             pass
@@ -144,6 +144,6 @@ def kill_wsl_job(distro=DISTRO):
     """used by the UI when Cancel kills the worker process."""
     try:
         flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
-        subprocess.Popen(["wsl", "-d", distro, "--exec", "pkill", "-f", "laa_cosmos.py"], creationflags=flags)
+        subprocess.Popen(["wsl", "-d", distro, "--exec", "pkill", "-f", "pta_cosmos.py"], creationflags=flags)
     except Exception:
         pass

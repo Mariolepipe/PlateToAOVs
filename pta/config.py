@@ -38,8 +38,8 @@ def load_paths():
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
             data.update(json.load(f))
     data["comfyui_dir"] = _abs(data["comfyui_dir"])
-    if os.environ.get("LAA_MODEL_DIRS"):      # tests: other model folders (";" separated) than config.json
-        data["model_dirs"] = [d for d in os.environ["LAA_MODEL_DIRS"].split(";") if d.strip()]
+    if os.environ.get("PTA_MODEL_DIRS"):      # tests: other model folders (";" separated) than config.json
+        data["model_dirs"] = [d for d in os.environ["PTA_MODEL_DIRS"].split(";") if d.strip()]
     data["model_dirs"] = [_abs(d) for d in data["model_dirs"]]
     data["sapiens2_repo"] = _abs(data["sapiens2_repo"])
     data["vda_code"] = _abs(data["vda_code"])

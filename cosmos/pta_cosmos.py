@@ -1,10 +1,10 @@
 """
-LiveActionAOVs <-> Cosmos DiffusionRenderer (inverse renderer, NVIDIA). Runs INSIDE WSL, in the
+PlateToAOVs <-> Cosmos DiffusionRenderer (inverse renderer, NVIDIA). Runs INSIDE WSL, in the
 cosmos-predict1 conda env, from the cosmos1-diffusion-renderer repo folder:
 
-  python laa_cosmos.py --in_dir /mnt/d/.../cosmos_in --out_dir /mnt/d/.../cosmos_out --passes basecolor
+  python pta_cosmos.py --in_dir /mnt/d/.../cosmos_in --out_dir /mnt/d/.../cosmos_out --passes basecolor
 
-in_dir : 00000.png, 00001.png ... frames already letterboxed to 1280x704 by LAA
+in_dir : 00000.png, 00001.png ... frames already letterboxed to 1280x704 by PTA
 out_dir: <pass>/00000.png ...  (uint8, what the model outputs), overlaps between the 57-frame
          chunks are cross-faded so there is no pop at the chunk boundary.
 Progress: lines "@@COSMOS {json}" on stdout.

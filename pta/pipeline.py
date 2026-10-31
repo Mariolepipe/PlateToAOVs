@@ -113,6 +113,7 @@ class Job(object):
         self.cache = os.path.join(self.out, "_cache")
         self.prev = os.path.join(self.out, "_preview")
         os.makedirs(self.cache, exist_ok=True)
+        self._migrate_old_names()
         self.n = len(self.seq)
         self._ran = set()
 
@@ -155,8 +156,29 @@ class Job(object):
     def people_on(self):
         return bool(self.s.people_enabled) and self.needed("people")
 
+    def _migrate_old_names(self):
+        """output folders made before the rename (LiveActionAOVs): laa_people.json + laa_people_keys/
+        become pta_*, so your clicks and names are kept"""
+        old, new = os.path.join(self.out, "laa_people.json"), os.path.join(self.out, "pta_people.json")
+        if not os.path.isfile(old) or os.path.isfile(new):
+            return
+        try:
+            with open(old) as f:
+                e = json.load(f)
+            for k in e.get("keys", []):
+                if isinstance(k.get("base"), str):
+                    k["base"] = k["base"].replace("laa_people_keys", "pta_people_keys")
+            kd = os.path.join(self.out, "laa_people_keys")
+            if os.path.isdir(kd) and not os.path.exists(os.path.join(self.out, "pta_people_keys")):
+                os.rename(kd, os.path.join(self.out, "pta_people_keys"))
+            with open(new, "w") as f:
+                json.dump(e, f, indent=1)
+            os.remove(old)
+        except Exception:
+            pass
+
     def edits_path(self):
-        return os.path.join(self.out, "laa_people.json")
+        return os.path.join(self.out, "pta_people.json")
 
     def _people_base(self, legacy=False):
         """what your clicks and names belong to: the plate (a new plate = nothing to keep). What
@@ -187,7 +209,7 @@ class Job(object):
         from .stages import people as PP
         self.save_people_edits(PP.empty_edits(self._people_base()))
         for d in (os.path.join(self.cache, "people"), os.path.join(self.prev, "people"),
-                  os.path.join(self.out, "laa_people_keys")):
+                  os.path.join(self.out, "pta_people_keys")):
             shutil.rmtree(d, ignore_errors=True)
 
     def save_people_edits(self, e):
@@ -366,7 +388,7 @@ class Job(object):
     # ------------------------------------------------------------------ run
     def run(self, until=None, force=()):
         """Run every step that is out of date (or in `force`), up to and including `until`."""
-        with open(os.path.join(self.out, "laa_job.json"), "w") as f:
+        with open(os.path.join(self.out, "pta_job.json"), "w") as f:
             f.write(self.s.to_json())
         if until == "people":                      # asked for on the People page
             self.want_people = True
@@ -637,7 +659,7 @@ class Job(object):
                 json.dump({"settings": dataclasses.asdict(s), "start": start, "level": level, "steps": steps}, f)
             env = dict(os.environ, PYTHONIOENCODING="utf-8")
             flags = getattr(subprocess, "CREATE_NO_WINDOW", 0)
-            proc = subprocess.Popen([sys.executable, "-u", "-m", "laa.moge_child", req], cwd=str(config.APP_DIR),
+            proc = subprocess.Popen([sys.executable, "-u", "-m", "pta.moge_child", req], cwd=str(config.APP_DIR),
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env, creationflags=flags,
                                     text=True, encoding="utf-8", errors="replace")
             done, last = start, ""
@@ -1175,7 +1197,7 @@ class Job(object):
             self.check()
             H, W = self.plate(i).shape[:2]
             ch = {}
-            attrs = {"laa/source": "LiveActionAOVs", "laa/frame": float(self.seq.numbers[i])}
+            attrs = {"pta/source": "PlateToAOVs", "pta/frame": float(self.seq.numbers[i])}
             if self.people_on():                  # people.id value -> the name you gave them
                 e = self.people_edits()
                 names = {k: v for k, v in e.get("names", {}).items()

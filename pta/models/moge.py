@@ -18,7 +18,7 @@ def _patch_refiner(log):
     refiner. Clean the depth first and keep the volume a sane size; remember what was seen."""
     from comfy.ldm.moge import model as M
     cls = getattr(M, "MoGeModelV3", None)
-    if cls is None or getattr(cls, "_laa_patched", False):
+    if cls is None or getattr(cls, "_pta_patched", False):
         return
     orig = cls._refine_logz
 
@@ -43,7 +43,7 @@ def _patch_refiner(log):
         return orig(self, coord, conditioning)
 
     cls._refine_logz = _refine_logz
-    cls._laa_patched = True
+    cls._pta_patched = True
 
 
 def stats_text():

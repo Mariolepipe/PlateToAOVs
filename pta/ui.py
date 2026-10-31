@@ -1,5 +1,5 @@
 """
-LiveActionAOVs desktop app (PySide6).
+PlateToAOVs desktop app (PySide6).
 
 One window, three things: pick a plate, look at it, Generate. Everything technical (model sizes,
 crop padding, stabilization...) lives in the Advanced settings sheet; the pipeline's inner steps
@@ -220,7 +220,7 @@ class Viewer(QtWidgets.QGraphicsView):
 
 # ------------------------------------------------------------------------------------- worker
 class Runner(QtCore.QObject):
-    """Runs the job in a separate Python process (laa.worker). Cancel kills it: immediate."""
+    """Runs the job in a separate Python process (pta.worker). Cancel kills it: immediate."""
     log = QtCore.Signal(str)
     progress = QtCore.Signal(str, int, int)
     detail = QtCore.Signal(str)
@@ -243,11 +243,11 @@ class Runner(QtCore.QObject):
         self.proc.finished.connect(self._done)
 
     def start(self):
-        req = os.path.join(tempfile.gettempdir(), "laa_job_%d.json" % os.getpid())
+        req = os.path.join(tempfile.gettempdir(), "pta_job_%d.json" % os.getpid())
         with open(req, "w", encoding="utf-8") as f:
             json.dump({"settings": dataclasses.asdict(self.settings), "force": list(self.force),
                        "until": self.until}, f)
-        self.proc.start(PYTHON, ["-u", "-m", "laa.worker", req])
+        self.proc.start(PYTHON, ["-u", "-m", "pta.worker", req])
 
     def cancel(self):
         self.cancelled = True
@@ -264,14 +264,14 @@ class Runner(QtCore.QObject):
 
     def _read(self):
         self._buf += bytes(self.proc.readAllStandardOutput())
-        # progress bars (tqdm) end lines with \r, and can glue our "@@LAA" message to their text
+        # progress bars (tqdm) end lines with \r, and can glue our "@@PTA" message to their text
         *lines, self._buf = self._buf.replace(b"\r", b"\n").split(b"\n")
         for raw in lines:
             line = raw.decode("utf-8", "replace")
-            k = line.find("@@LAA ")
+            k = line.find("@@PTA ")
             if k > 0:
                 line = line[k:]
-            if line.startswith("@@LAA "):
+            if line.startswith("@@PTA "):
                 try:
                     m = json.loads(line[6:])
                 except ValueError:
@@ -298,7 +298,7 @@ class Runner(QtCore.QObject):
 
 
 class SamServer(QtCore.QObject):
-    """SAM 3.1 kept loaded in its own process while you click on the People page (laa.sam_server):
+    """SAM 3.1 kept loaded in its own process while you click on the People page (pta.sam_server):
     each click re-cuts the current frame right away. Killed when leaving the page or applying."""
     ready = QtCore.Signal()
     preview = QtCore.Signal(int, int, str)          # request id, frame, id image path
@@ -322,10 +322,10 @@ class SamServer(QtCore.QObject):
         self.proc.finished.connect(lambda *_: (setattr(self, "is_ready", False)))
 
     def command(self):
-        return PYTHON, ["-u", "-m", "laa.sam_server"]
+        return PYTHON, ["-u", "-m", "pta.sam_server"]
 
     def start(self):
-        req = os.path.join(tempfile.gettempdir(), "laa_sam_%d.json" % os.getpid())
+        req = os.path.join(tempfile.gettempdir(), "pta_sam_%d.json" % os.getpid())
         with open(req, "w", encoding="utf-8") as f:
             json.dump({"settings": dataclasses.asdict(self.settings)}, f)
         exe, args = self.command()
@@ -350,7 +350,7 @@ class SamServer(QtCore.QObject):
         *lines, self._buf = self._buf.replace(b"\r", b"\n").split(b"\n")
         for raw in lines:
             line = raw.decode("utf-8", "replace")
-            k = line.find("@@LAA ")
+            k = line.find("@@PTA ")
             if k < 0:
                 if line.strip() and "it/s]" not in line and "s/it]" not in line:
                     self.log.emit(line)
@@ -631,7 +631,7 @@ class TokenDialog(QtWidgets.QDialog):
         self.edit.setEchoMode(QtWidgets.QLineEdit.Password)
         self.edit.setPlaceholderText("hf_...")
         v.addWidget(self.edit)
-        self.remember = QtWidgets.QCheckBox("Remember on this PC (kept by Hugging Face, not by LiveActionAOVs)")
+        self.remember = QtWidgets.QCheckBox("Remember on this PC (kept by Hugging Face, not by PlateToAOVs)")
         v.addWidget(self.remember)
         row = QtWidgets.QHBoxLayout()
         no = QtWidgets.QPushButton("Cancel")
@@ -782,7 +782,7 @@ class ModelsDialog(QtWidgets.QDialog):
         self.b_close.setText("Stop")
         self.b_close.clicked.disconnect()
         self.b_close.clicked.connect(self._stop)
-        self.proc.start(PYTHON, ["-u", "-m", "laa.download"] + keys)
+        self.proc.start(PYTHON, ["-u", "-m", "pta.download"] + keys)
 
     def _read(self):
         import re
@@ -844,11 +844,15 @@ class ModelsDialog(QtWidgets.QDialog):
 class Main(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("LiveActionAOVs")
-        self.setWindowIcon(QtGui.QIcon(os.path.join(ASSETS, "laa_icon.png")))
+        self.setWindowTitle("PlateToAOVs")
+        self.setWindowIcon(QtGui.QIcon(os.path.join(ASSETS, "pta_icon.png")))
         self.resize(1560, 920)
-        fresh = os.environ.get("LAA_FRESH_TEST") == "1"   # first-install test: settings of its own
-        self.qs = QtCore.QSettings("LiveActionAOVs", "LiveActionAOVs-fresh-test" if fresh else "LiveActionAOVs")
+        fresh = os.environ.get("PTA_FRESH_TEST") == "1"   # first-install test: settings of its own
+        self.qs = QtCore.QSettings("PlateToAOVs", "PlateToAOVs-fresh-test" if fresh else "PlateToAOVs")
+        if not fresh and not self.qs.allKeys():   # settings saved before the rename (LiveActionAOVs)
+            old_qs = QtCore.QSettings("LiveActionAOVs", "LiveActionAOVs")
+            for k in old_qs.allKeys():
+                self.qs.setValue(k, old_qs.value(k))
         self.dev = self.qs.value("developer_mode", False, type=bool)
         self.s = self._load_last()
         self.job = None
@@ -927,7 +931,7 @@ class Main(QtWidgets.QMainWindow):
         sv = QtWidgets.QVBoxLayout(side)
         sv.setContentsMargins(22, 20, 22, 18)
         sv.setSpacing(6)
-        h1 = QtWidgets.QLabel("LiveActionAOVs")
+        h1 = QtWidgets.QLabel("PlateToAOVs")
         h1.setObjectName("h1")
         sv.addWidget(h1)
         sv.addSpacing(10)
@@ -1141,7 +1145,7 @@ class Main(QtWidgets.QMainWindow):
         self.logwin = QtWidgets.QPlainTextEdit()
         self.logwin.setReadOnly(True)
         self.logwin.setMaximumBlockCount(5000)
-        self.logwin.setWindowTitle("LiveActionAOVs log")
+        self.logwin.setWindowTitle("PlateToAOVs log")
         self.logwin.resize(760, 460)
 
         # ---------- signals
@@ -1315,7 +1319,9 @@ class Main(QtWidgets.QMainWindow):
         self._preload()
 
     def _offer_previous(self):
-        jf = os.path.join(self.job.out, "laa_job.json")
+        jf = os.path.join(self.job.out, "pta_job.json")
+        if not os.path.isfile(jf):                # a folder made before the rename
+            jf = os.path.join(self.job.out, "laa_job.json")
         if not os.path.isfile(jf) or getattr(self, "_offered", None) == jf:
             return
         self._offered = jf
@@ -1325,7 +1331,7 @@ class Main(QtWidgets.QMainWindow):
         except Exception:
             return
         if old != self.s and QtWidgets.QMessageBox.question(
-                self, "LiveActionAOVs", "This plate was already processed.\nUse the same settings?") == QtWidgets.QMessageBox.Yes:
+                self, "PlateToAOVs", "This plate was already processed.\nUse the same settings?") == QtWidgets.QMessageBox.Yes:
             self.s = old
             self._apply_quick(old)
             self.s = self._collect()
@@ -1406,7 +1412,7 @@ class Main(QtWidgets.QMainWindow):
             if self.job is not None and self.s.people_enabled and not self._people_ready():
                 e = self.job.people_edits()
                 if e.get("keys") and QtWidgets.QMessageBox.question(
-                        self, "LiveActionAOVs", "Finding everyone automatically starts the selection again "
+                        self, "PlateToAOVs", "Finding everyone automatically starts the selection again "
                         "(your clicks are dropped). Continue?") != QtWidgets.QMessageBox.Yes:
                     return
                 e["keys"], e["auto"] = [], True   # SAM 3.1 numbers people its own way: start clean
@@ -1417,7 +1423,7 @@ class Main(QtWidgets.QMainWindow):
                 self.previews.clear()
                 return self._run(until="people")
             if self.pending and QtWidgets.QMessageBox.question(
-                    self, "LiveActionAOVs", "You have clicks not applied yet.\nApply them first?") == QtWidgets.QMessageBox.Yes:
+                    self, "PlateToAOVs", "You have clicks not applied yet.\nApply them first?") == QtWidgets.QMessageBox.Yes:
                 return self._apply_fixes()
             self.pending = {}
             if self._people_ready():
@@ -1928,7 +1934,7 @@ class Main(QtWidgets.QMainWindow):
         m = ids == target
         if not m.any():
             return None
-        rel = os.path.join("laa_people_keys", "f%05d_p%d_%d.png" % (frame, target, int(time.time() * 1000) % 100000))
+        rel = os.path.join("pta_people_keys", "f%05d_p%d_%d.png" % (frame, target, int(time.time() * 1000) % 100000))
         p = os.path.join(self.job.out, rel)
         os.makedirs(os.path.dirname(p), exist_ok=True)
         seq.write_png(p, (m * 255).astype(np.uint8))
@@ -1955,7 +1961,7 @@ class Main(QtWidgets.QMainWindow):
     def _clear_all(self):
         if self.job is None or self.runner is not None:
             return
-        if QtWidgets.QMessageBox.question(self, "LiveActionAOVs", "Remove everyone, your clicks, names and objects, "
+        if QtWidgets.QMessageBox.question(self, "PlateToAOVs", "Remove everyone, your clicks, names and objects, "
                                           "and start the segmentation again?") != QtWidgets.QMessageBox.Yes:
             return
         was_on = self.b_fix.isChecked()
@@ -2104,7 +2110,7 @@ class Main(QtWidgets.QMainWindow):
     def closeEvent(self, e):
         self._stop_sam()
         if self.runner:
-            if QtWidgets.QMessageBox.question(self, "LiveActionAOVs", "Still generating. Stop and quit?") != QtWidgets.QMessageBox.Yes:
+            if QtWidgets.QMessageBox.question(self, "PlateToAOVs", "Still generating. Stop and quit?") != QtWidgets.QMessageBox.Yes:
                 return e.ignore()
             self.runner.cancel()
             self.runner.proc.waitForFinished(3000)
@@ -2138,13 +2144,13 @@ def main():
     if sys.platform == "win32":                 # own taskbar entry and icon, not python.exe's
         try:
             import ctypes
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("LiveActionAOVs.LAA")
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("PlateToAOVs.PTA")
         except Exception:
             pass
     app = QtWidgets.QApplication(sys.argv)
-    app.setApplicationName("LiveActionAOVs")
-    ico = os.path.join(ASSETS, "laa_icon.ico")
-    app.setWindowIcon(QtGui.QIcon(ico if os.path.isfile(ico) else os.path.join(ASSETS, "laa_icon.png")))
+    app.setApplicationName("PlateToAOVs")
+    ico = os.path.join(ASSETS, "pta_icon.ico")
+    app.setWindowIcon(QtGui.QIcon(ico if os.path.isfile(ico) else os.path.join(ASSETS, "pta_icon.png")))
     app.setStyle("Fusion")
     app.setPalette(_dark_palette())
     app.setStyleSheet(STYLE)

@@ -5,7 +5,7 @@ Uses Materia (Biohazard VFX, GPL-3, github.com/NicholaiVogel/comfyui-materia): a
 re-implementation of the Cosmos DiT (no Transformer Engine) + the diffusers Cosmos VAE. Only its
 model files are used (vendor/materia), not its ComfyUI nodes.
 
-Weights (Models window of the app, or python -m laa.download cosmos):
+Weights (Models window of the app, or python -m pta.download cosmos):
   <models>/diffusion_models/Diffusion_Renderer_Inverse_Cosmos_7B/model.pt   (nvidia, ~28 GB)
   <models>/vae/Cosmos-1.0-Tokenizer-CV8x8x8/vae/                             (diffusers VAE)
 
@@ -127,7 +127,7 @@ class CosmosNative(CosmosRenderer):
     def _hook_steps(self, model):
         """count the scheduler steps of the denoising loop -> 'Step 3 of 15' in the status line."""
         sch = getattr(model, "scheduler", None)
-        if sch is None or getattr(sch, "_laa_hooked", False):
+        if sch is None or getattr(sch, "_pta_hooked", False):
             return
         orig = sch.step
         me = self
@@ -138,7 +138,7 @@ class CosmosNative(CosmosRenderer):
             return orig(*a, **k)
 
         sch.step = step
-        sch._laa_hooked = True
+        sch._pta_hooked = True
 
     def run(self, in_dir, out_dir, progress=None, cancel=None):
         from PIL import Image
